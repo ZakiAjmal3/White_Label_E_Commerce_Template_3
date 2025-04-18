@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginBottom="10dp"
+    android:foreground="?android:attr/selectableItemBackgroundBorderless"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="10dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/grey_bg">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="15dp">
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_right_arrow"
+            android:layout_alignParentEnd="true"
+            android:padding="5dp"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/orderStatusTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shipped"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:background="@drawable/rounded_corner_box_full_curved"
+            android:paddingTop="7dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"/>
+        <TextView
+            android:id="@+id/orderDateTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mar 7, 2025"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:layout_toRightOf="@id/orderStatusTxt"
+            android:paddingTop="7dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:layout_below="@id/orderStatusTxt"
+            android:layout_marginTop="10dp">
+            <ImageView
+                android:id="@+id/productImg"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/no_image"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/productImg">
+                <TextView
+                    android:id="@+id/orderIdTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:text="Order id: 1233434564"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/orderProductTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:text="Product title"
+                    android:layout_below="@id/orderIdTxt"
+                    android:textSize="15sp"
+                    />
+                <TextView
+                    android:id="@+id/orderPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:text="₹ 1223"
+                    android:layout_below="@id/orderProductTitle"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

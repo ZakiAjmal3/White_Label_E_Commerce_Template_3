@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Timeline view icon -->
+
+
+    <com.github.vipulasri.timelineview.TimelineView
+        android:id="@+id/time_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        app:marker="@drawable/tracking_dot"
+        app:markerSize="30dp"
+        app:startLineColor="@color/grey_darker_bg"
+        app:endLineColor="@color/grey_darker_bg"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingStart="16dp">
+
+        <!-- Stage name -->
+        <TextView
+            android:id="@+id/stageName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Stage"
+            android:textSize="18sp" />
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="In Progress"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

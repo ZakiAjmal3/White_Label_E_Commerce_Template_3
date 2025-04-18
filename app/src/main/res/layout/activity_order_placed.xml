@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Activities.OrderPlacedActivity">
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="0dp"
+            app:strokeColor="@color/grey_bg"
+            app:strokeWidth="1dp" />
+
+        <ImageView
+            android:id="@+id/imgMenu"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:clickable="true"
+            android:contentDescription="Menu Drawer Icon"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/checkoutTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OrderPlaced"
+            android:layout_toRightOf="@+id/imgMenu"
+            android:layout_centerVertical="true"
+            android:textSize="25sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"/>
+    </RelativeLayout>
+    <ImageView
+        android:id="@+id/orderSuccessIV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/order_successfull"
+        android:layout_centerVertical="true"/>
+    <Button
+        android:id="@+id/gotoMyOrders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go To My Orders"
+        android:layout_below="@id/orderSuccessIV"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"/>
+</RelativeLayout>

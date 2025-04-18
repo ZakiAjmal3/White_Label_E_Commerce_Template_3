@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">White Label Template 3</string>
+    <string-array name="my_orders_status_sort_list">
+        <item>All</item>
+        <item>Pending</item>
+        <item>Confirmed</item>
+        <item>Shipped</item>
+        <item>Delivered</item>
+        <item>Failed</item>
+        <item>Cancelled</item>
+    </string-array>
+    <string-array name="my_orders_filter_sort_list">
+        <item>All</item>
+        <item>1 months ago</item>
+        <item>3 months ago</item>
+        <item>6 months ago</item>
+        <item>2025</item>
+        <item>2024</item>
+    </string-array>
+</resources>

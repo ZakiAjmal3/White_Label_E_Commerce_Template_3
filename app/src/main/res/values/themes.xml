@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowTranslucentStatus">false</item>
+<!--        <item name="android:statusBarColor">@color/white</item>-->
+        <item name="colorPrimary">@color/cyan</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+    <style name="DialogAnimationDisplayLeft">
+        <item name="android:windowEnterAnimation">@anim/lefttorightdisplayleft</item>
+        <item name="android:windowExitAnimation">@anim/righttoleftdisplayleft</item>
+    </style>
+    <style name="DialogAnimationDisplayRight">
+        <item name="android:windowEnterAnimation">@anim/righttoleftdisplayright</item>
+        <item name="android:windowExitAnimation">@anim/lefttorightdisplayright</item>
+    </style>
+    <style name="DialogAnimationDisplayPopUp">
+        <item name="android:windowEnterAnimation">@anim/checkoutaddressdialogentry</item>
+        <item name="android:windowExitAnimation">@anim/checkoutaddressdialogexit</item>
+    </style>
+    <style name="DialogAnimationDisplayBottomTop">
+        <item name="android:windowEnterAnimation">@anim/bottomtotop</item>
+        <item name="android:windowExitAnimation">@anim/toptobottom</item>
+    </style>
+</resources>
