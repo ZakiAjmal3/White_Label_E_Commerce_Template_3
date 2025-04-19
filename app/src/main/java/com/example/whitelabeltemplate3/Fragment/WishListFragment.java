@@ -27,6 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.whitelabeltemplate3.Adapters.ProductRecyclerForFragmentAdapter;
+import com.example.whitelabeltemplate3.Adapters.WishlistItemAdapter;
 import com.example.whitelabeltemplate3.Models.ProductDetailsModel;
 import com.example.whitelabeltemplate3.Models.ProductImagesModel;
 import com.example.whitelabeltemplate3.R;
@@ -78,7 +79,7 @@ public class WishListFragment extends Fragment {
         }else {
             newArrivalList = sessionManager.getWishList();
             if (!newArrivalList.isEmpty()) {
-                wishListRecycler.setAdapter(new ProductRecyclerForFragmentAdapter(newArrivalList, WishListFragment.this));
+                wishListRecycler.setAdapter(new WishlistItemAdapter(newArrivalList, WishListFragment.this));
                 mainLayout.setVisibility(View.VISIBLE);
                 noDataLayout.setVisibility(View.GONE);
                 progressBarDialog.dismiss();
@@ -153,7 +154,7 @@ public class WishListFragment extends Fragment {
                             }
 
                             if (!newArrivalList.isEmpty()) {
-                                wishListRecycler.setAdapter(new ProductRecyclerForFragmentAdapter(newArrivalList, WishListFragment.this));
+                                wishListRecycler.setAdapter(new WishlistItemAdapter(newArrivalList, WishListFragment.this));
                                 mainLayout.setVisibility(View.VISIBLE);
                                 noDataLayout.setVisibility(View.GONE);
                                 progressBarDialog.dismiss();

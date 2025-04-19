@@ -19,10 +19,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,6 +58,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
     SessionManager sessionManager;
     String authToken;
     Dialog progressBarDialog;
+    boolean moveToWishlistCardBoolean = false;
     public CartItemAdapter(ArrayList<CartItemModel> productDetailsList, Fragment context) {
         this.productDetailsList = productDetailsList;
         this.context = context;
@@ -76,7 +79,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
 
         holder.productTitleTxt.setText(productDetailsList.get(position).getProductTitle());
         holder.productTitleTxt.setEllipsize(TextUtils.TruncateAt.END);
-        holder.productTitleTxt.setMaxLines(1);
+        holder.productTitleTxt.setMaxLines(2);
         holder.productSizeTxt.setText("Large");
         holder.productColorTxt.setText("Black");
         holder.productQuantityTxt.setText(productDetailsList.get(position).getProductQuantity());
@@ -87,29 +90,57 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
             Glide.with(context).load(R.drawable.no_image);
         }
         if (!productDetailsList.get(position).getDiscountAmount().equals("0")) {
-            String originalPrice, disPercent, sellingPrice;
+            String originalPrice, sellingPrice;
             originalPrice = productDetailsList.get(position).getProductMRP();
-            disPercent = productDetailsList.get(position).getDiscountPercentage();
             sellingPrice = productDetailsList.get(position).getProductPrice();
+            int disAmount = (Integer.parseInt(originalPrice) - Integer.parseInt(sellingPrice));
 
             // Create a SpannableString for the original price with strikethrough
             SpannableString spannableOriginalPrice = new SpannableString("₹" + originalPrice);
             spannableOriginalPrice.setSpan(new StrikethroughSpan(), 0, spannableOriginalPrice.length(), 0);
             // Create the discount text
-            String discountText = "(-" + disPercent + "%)";
             spannableText = new SpannableStringBuilder();
             spannableText.append("₹" + sellingPrice + " ");
             spannableText.append(spannableOriginalPrice);
-            spannableText.append(" " + discountText);
-            // Set the color for the discount percentage
-            int startIndex = spannableText.length() - discountText.length();
-            spannableText.setSpan(new ForegroundColorSpan(Color.GREEN), startIndex, spannableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+            holder.productPriceStrikeThroughTxt.setText(spannableOriginalPrice);
+            // Set combined text to productPrice
             holder.productPriceTxt.setText(spannableText);
+            // Set discount % separately to productDiscount with green color
+            String discountText = "(Save ₹" + disAmount + ")";
+            holder.productDiscount.setText(discountText);
+            holder.productDiscount.setVisibility(View.VISIBLE);
         }else {
+            // No discount, just show the selling price
             holder.productPriceTxt.setText("₹" + productDetailsList.get(position).getProductPrice());
+            holder.productDiscount.setVisibility(View.GONE);
+            holder.productPriceStrikeThroughTxt.setVisibility(View.GONE);
         }
         holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBarDialog = new Dialog(context.getContext());
+                progressBarDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                progressBarDialog.setContentView(R.layout.progress_bar_dialog);
+                progressBarDialog.setCancelable(false);
+                progressBarDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                progressBarDialog.getWindow().setGravity(Gravity.CENTER); // Center the dialog
+                progressBarDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT); // Adjust the size
+                progressBarDialog.show();
+                if (sessionManager.isLoggedIn()) {
+                    deleteItem(position);
+                }else {
+                    sessionManager.removeCartItem(productDetailsList.get(position).getProductId());
+                    productDetailsList.remove(position);
+                    notifyDataSetChanged();
+                    ((CartItemFragment) context).setOrderSummaryDetails();
+                    ((CartItemFragment) context).checkCartItemArraySize();
+                    setCartCount();
+                    progressBarDialog.dismiss();
+                }
+            }
+        });
+        holder.moveToWishlistCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressBarDialog = new Dialog(context.getContext());
@@ -221,14 +252,19 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
                     @Override
                     public void onResponse(JSONObject response) {
                         Toast.makeText(context.getContext(), "Item deleted successfully", Toast.LENGTH_SHORT).show();
-                        sessionManager.removeCartItem(productDetailsList.get(position).getProductId());
-                        productDetailsList.remove(position);
-                        notifyDataSetChanged();
-                        sessionManager.getCartFromServer();
-                        ((CartItemFragment) context).setOrderSummaryDetails();
-                        ((CartItemFragment) context).checkCartItemArraySize();
-                        setCartCount();
-                        progressBarDialog.dismiss();
+                        if (!moveToWishlistCardBoolean){
+                            moveToWishlistCardBoolean = true;
+                            addToWishList(position);
+                        }else {
+                            sessionManager.removeCartItem(productDetailsList.get(position).getProductId());
+                            productDetailsList.remove(position);
+                            notifyDataSetChanged();
+                            sessionManager.getCartFromServer();
+                            ((CartItemFragment) context).setOrderSummaryDetails();
+                            ((CartItemFragment) context).checkCartItemArraySize();
+                            setCartCount();
+                            progressBarDialog.dismiss();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -261,23 +297,86 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
         };
         MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
+    private void addToWishList(int position) {
+        String orderURL = Constant.BASE_URL + "wishlist";
+        String productId = productDetailsList.get(position).getProductId();
+        String userId = sessionManager.getUserData().get("userId");
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("productId", productId);
+            jsonObject.put("userId", userId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, orderURL, jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Toast.makeText(context.getContext(), "Item added to wishlist", Toast.LENGTH_SHORT).show();
+                        sessionManager.getWishlistFromServer();
+                        moveToWishlistCardBoolean = false;
+                        sessionManager.removeCartItem(productDetailsList.get(position).getProductId());
+                        productDetailsList.remove(position);
+                        notifyDataSetChanged();
+                        sessionManager.getCartFromServer();
+                        ((CartItemFragment) context).setOrderSummaryDetails();
+                        ((CartItemFragment) context).checkCartItemArraySize();
+                        setCartCount();
+                        progressBarDialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMessage = "Error: " + error.toString();
+                        if (error.networkResponse != null) {
+                            try {
+                                // Parse the error response
+                                String jsonError = new String(error.networkResponse.data);
+                                JSONObject jsonObject = new JSONObject(jsonError);
+                                String message = jsonObject.optString("message", "Unknown error");
+                                // Now you can use the message
+                                Toast.makeText(context.getContext(), message, Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.e("ExamListError", errorMessage);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + authToken);
+                return headers;
+            }
+        };
+        MySingletonFragment.getInstance(context).addToRequestQueue(jsonObjectRequest);
+    }
     @Override
     public int getItemCount() {
         return productDetailsList.size();
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView productTitleTxt, productPriceTxt, productSizeTxt, productColorTxt, productQuantityTxt;
-        ImageView productImg,deleteBtn,plus,minus;;
+        TextView productTitleTxt, productPriceTxt, productSizeTxt, productColorTxt, productQuantityTxt,productDiscount,productPriceStrikeThroughTxt;;
+        ImageView productImg;
+        RelativeLayout deleteBtn,moveToWishlistCard;
+        CardView plus,minus;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             productTitleTxt = itemView.findViewById(R.id.productTitleTxt);
             productPriceTxt = itemView.findViewById(R.id.productPriceTxt);
+            productDiscount = itemView.findViewById(R.id.productDiscountTxt);
+            productPriceStrikeThroughTxt = itemView.findViewById(R.id.productPriceStrikeThroughTxt);
             productSizeTxt = itemView.findViewById(R.id.sizeTxt);
             productColorTxt = itemView.findViewById(R.id.colorTxt);
             productQuantityTxt = itemView.findViewById(R.id.quantityDisplayTxt);
-            plus = itemView.findViewById(R.id.quantityPlusTxt);
-            minus = itemView.findViewById(R.id.quantityMinusTxt);
-            deleteBtn = itemView.findViewById(R.id.deleteBtn);
+            plus = itemView.findViewById(R.id.plusCard);
+            minus = itemView.findViewById(R.id.minusCard);
+            deleteBtn = itemView.findViewById(R.id.removeRL);
+            moveToWishlistCard = itemView.findViewById(R.id.moveToWishlistCard);
             productImg = itemView.findViewById(R.id.productImg);
 
         }

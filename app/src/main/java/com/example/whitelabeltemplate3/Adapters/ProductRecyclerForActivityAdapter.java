@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -122,7 +121,7 @@ public class ProductRecyclerForActivityAdapter extends RecyclerView.Adapter<Prod
         if (wishlistState == 1){
             holder.wishListImg.setImageResource(R.drawable.ic_heart_red);
         }else {
-            holder.wishListImg.setImageResource(R.drawable.ic_heart_grey);
+            holder.wishListImg.setImageResource(R.drawable.ic_heart_grey2);
         }
         holder.wishListImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +136,7 @@ public class ProductRecyclerForActivityAdapter extends RecyclerView.Adapter<Prod
                         productArrayList.get(position).setWishListImgToggle(1);
                     } else {
                         removeFromWishList(position);
-                        holder.wishListImg.setImageResource(R.drawable.ic_heart_grey);
+                        holder.wishListImg.setImageResource(R.drawable.ic_heart_grey2);
                         productArrayList.get(position).setWishListImgToggle(0);
                     }
                 }else {
@@ -148,7 +147,7 @@ public class ProductRecyclerForActivityAdapter extends RecyclerView.Adapter<Prod
                         Toast.makeText(context, "Item added to WishList", Toast.LENGTH_SHORT).show();
                     } else {
                         sessionManager.removeWishListItem(productArrayList.get(position).getProductId());
-                        holder.wishListImg.setImageResource(R.drawable.ic_heart_grey);
+                        holder.wishListImg.setImageResource(R.drawable.ic_heart_grey2);
                         productArrayList.get(position).setWishListImgToggle(0);
                         Toast.makeText(context, "Item removed from WishList", Toast.LENGTH_SHORT).show();
 

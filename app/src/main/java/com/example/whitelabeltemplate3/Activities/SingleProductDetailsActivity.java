@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -57,18 +57,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SingleProductDetailsActivity extends AppCompatActivity {
-    ImageView backBtn, searchBtn,wishlistRLBtn,wishlistToggleBtn,cartRLBtn,quantityPlusIV, quantityMinusIV;
+    ImageView backBtn, searchBtn,wishlistRLBtn,wishlistToggleBtn,cartRLBtn;
     ViewPager2 productImg;
     LinearLayout dotLayout;
     boolean wishlistToggle = false;
-    TextView productTitleTxt, productPriceTxt, productDiscountTxt,productPriceStrikeThroughTxt,quantityTxt,wishlistItemCountTxt,cartItemCountTxt;
+    TextView productTitleTxt, productPriceTxt, productDiscountTxt,productPriceStrikeThroughTxt,wishlistItemCountTxt,cartItemCountTxt;
     WebView descriptionWebView;
     int quantityInt = 1;
-    RecyclerView newProductRecyclerView,popularProductRecyclerView;
+    RecyclerView newProductRecyclerView;
     ArrayList<ProductDetailsModel> singleProductArrayList,productsRecyclerModelArrayList;
     NestedScrollView nestedScrollView;
-    MaterialCardView viewAllCard1,viewAllCard2;
-    Button addToCartBtn;
+    MaterialCardView viewAllCard1;
+    CardView addToCartBtn;
     SessionManager sessionManager;
     String authToken;
     Dialog progressBarDialog;
@@ -116,9 +116,8 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
         descriptionWebView = findViewById(R.id.productionDescriptionWebView);
 
         viewAllCard1 = findViewById(R.id.viewAllCard1);
-        viewAllCard2 = findViewById(R.id.viewAllCard2);
 
-        addToCartBtn = findViewById(R.id.addToCartBtn);
+        addToCartBtn = findViewById(R.id.addToCartCard);
 
         productIdStr = getIntent().getStringExtra("productId");
 
@@ -127,27 +126,8 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
 
         setItemsCountTxt();
 
-        quantityPlusIV = findViewById(R.id.quantityPlusTxt);
-        quantityMinusIV = findViewById(R.id.quantityMinusTxt);
-        quantityTxt = findViewById(R.id.quantityDisplayTxt);
-
-        quantityTxt.setText(String.valueOf(quantityInt));
-
-        quantityPlusIV.setOnClickListener(v -> {
-            quantityInt++;
-            quantityTxt.setText(String.valueOf(quantityInt));
-        });
-        quantityMinusIV.setOnClickListener(v -> {
-            if (quantityInt > 1) {
-                quantityInt--;
-                quantityTxt.setText(String.valueOf(quantityInt));
-            }
-        });
-
         newProductRecyclerView = findViewById(R.id.newProductRecyclerView);
-        popularProductRecyclerView = findViewById(R.id.popularProductsRecyclerView);
         newProductRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
-        popularProductRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
 
         productsRecyclerModelArrayList = new ArrayList<>();
         singleProductArrayList = new ArrayList<>();
@@ -159,7 +139,7 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
                     wishlistToggleBtn.setImageResource(R.drawable.ic_heart_red);
                     wishlistToggle = true;
                 }else {
-                    wishlistToggleBtn.setImageResource(R.drawable.ic_heart_grey);
+                    wishlistToggleBtn.setImageResource(R.drawable.ic_heart_grey2);
                     wishlistToggle = false;
                 }
             }
@@ -197,7 +177,7 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
                         setItemsCountTxt();
                     } else {
                         removeFromWishList();
-                        wishlistToggleBtn.setImageResource(R.drawable.ic_heart_grey);
+                        wishlistToggleBtn.setImageResource(R.drawable.ic_heart_grey2);
                         wishlistToggle = false;
                         setItemsCountTxt();
                     }
@@ -210,7 +190,7 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
                         Toast.makeText(SingleProductDetailsActivity.this, "Item added to WishList", Toast.LENGTH_SHORT).show();
                     } else {
                         sessionManager.removeWishListItem(productIdStr);
-                        wishlistToggleBtn.setImageResource(R.drawable.ic_heart_grey);
+                        wishlistToggleBtn.setImageResource(R.drawable.ic_heart_grey2);
                         wishlistToggle = false;
                         setItemsCountTxt();
                         Toast.makeText(SingleProductDetailsActivity.this, "Item removed from WishList", Toast.LENGTH_SHORT).show();
@@ -236,12 +216,6 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
             }
         });
         viewAllCard1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(SingleProductDetailsActivity.this, HomePageActivity.class));
-            }
-        });
-        viewAllCard2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SingleProductDetailsActivity.this, HomePageActivity.class));
@@ -352,6 +326,7 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Toast.makeText(SingleProductDetailsActivity.this, "Item added to wishlist", Toast.LENGTH_SHORT).show();
                         sessionManager.getWishlistFromServer();
+                        setItemsCountTxt();
                     }
                 },
                 new Response.ErrorListener() {
@@ -400,6 +375,7 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
                         String message = response.optString("message", null);
                         Toast.makeText(SingleProductDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
                         sessionManager.getCartFromServer();
+                        setItemsCountTxt();
                     }
                 },
                 new Response.ErrorListener() {
@@ -566,7 +542,7 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
             productPriceTxt.setText(spannableText);
 
             // Set discount percent separately (you can show this in a separate TextView like: productDiscountTxt)
-            String discountText = "(-" + disPercent + "%)";
+            String discountText = "-" + disPercent + "%";
 
             // Example usage if you have a separate TextView for discount
             productDiscountTxt.setVisibility(View.VISIBLE);
@@ -651,7 +627,6 @@ public class SingleProductDetailsActivity extends AppCompatActivity {
                             }
                             if (!productsRecyclerModelArrayList.isEmpty()){
                                 newProductRecyclerView.setAdapter(new ProductRecyclerForActivityAdapter(productsRecyclerModelArrayList, SingleProductDetailsActivity.this));
-                                popularProductRecyclerView.setAdapter(new ProductRecyclerForActivityAdapter(productsRecyclerModelArrayList, SingleProductDetailsActivity.this));
                             }
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
